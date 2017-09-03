@@ -1,1 +1,4 @@
-emoji-data-python==1.0.2
+#emoji-data-python==1.0.2
+
+# Fix to add has_apple, has_emojione,…
+-e git+git@github.com:vjousse/emoji-data-python.git@add-missing-keys#egg=emoji-data-python
