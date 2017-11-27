@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_list(
+        split_index,
         emojione,
         google,
         apple,
@@ -24,7 +25,8 @@ def create_list(
 
     first = True
     elm_list = "[ "
-    for short_name, values in sorted_short_names.items():
+    nb_added = 0
+    for (short_name, values) in sorted_short_names.items():
         dict_values = values.__dict__
 
         logger.debug("{} {}".format(
@@ -38,6 +40,10 @@ def create_list(
                 (twitter and dict_values['has_img_twitter']) or \
                 (messenger and dict_values['has_img_messenger']):
 
+            if split_index and nb_added % split_index == 0:
+                elm_list = elm_list + "\n] ++ [ "
+                first = True
+
             if not first:
                 elm_list = elm_list + '\n, '
             else:
@@ -48,6 +54,8 @@ def create_list(
                     dict_values['short_name'],
                     dict_values['unified'].lower())
 
+            nb_added += 1
+
     elm_list = elm_list + "\n]"
 
     return elm_list
@@ -55,43 +63,48 @@ def create_list(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Create a List ( String, List String ) to the Elm format'
+        description='create a List ( String, List String ) to the Elm format'
                     ' with emoji data')
 
     parser.add_argument(
             "-v", "--verbose",
-            help="Increase output verbosity",
+            help="increase output verbosity",
             action="store_true")
 
     parser.add_argument(
             "--emojione",
-            help="Add emojione icons",
+            help="add emojione icons",
             action="store_true")
 
     parser.add_argument(
             "--google",
-            help="Add google icons",
+            help="add google icons",
             action="store_true")
 
     parser.add_argument(
             "--apple",
-            help="Add apple icons",
+            help="add apple icons",
             action="store_true")
 
     parser.add_argument(
             "--facebook",
-            help="Add facebook icons",
+            help="add facebook icons",
             action="store_true")
 
     parser.add_argument(
             "--twitter",
-            help="Add twitter icons",
+            help="add twitter icons",
             action="store_true")
 
     parser.add_argument(
             "--messenger",
-            help="Add messenger icons",
+            help="add messenger icons",
             action="store_true")
+
+    parser.add_argument(
+            '--split_index', type=int,
+            help='split the Elm list at a specific index '
+                 'to avoid Runtime Exceptions')
 
     args = parser.parse_args()
 
@@ -99,6 +112,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
 
     print(create_list(
+        args.split_index,
         args.emojione,
         args.google,
         args.apple,
