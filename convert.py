@@ -26,7 +26,7 @@ def create_list(
     first = True
     elm_list = "[ "
     nb_added = 0
-    for (short_name, values) in sorted_short_names.items():
+    for (idx, (short_name, values)) in enumerate(sorted_short_names.items()):
         dict_values = values.__dict__
 
         logger.debug("{} {}".format(
@@ -40,7 +40,9 @@ def create_list(
                 (twitter and dict_values['has_img_twitter']) or \
                 (messenger and dict_values['has_img_messenger']):
 
-            if split_index and nb_added % split_index == 0:
+            if split_index \
+                    and nb_added % split_index == 0 \
+                    and idx != 0:
                 elm_list = elm_list + "\n] ++ [ "
                 first = True
 
@@ -50,7 +52,7 @@ def create_list(
                 first = False
 
             elm_list = \
-                elm_list + '( "{}", [ "{}" ] )'.format(
+                elm_list + '( ":{}:", [ "{}" ] )'.format(
                     dict_values['short_name'],
                     dict_values['unified'].lower())
 
